@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        ">
+    <!-- 数据源-0 -->
+    <bean id="sharding_rep_0" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url_0}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- Connection Pooling Info -->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        <property name="defaultAutoCommit" value="${jdbc.defaultAutoCommit}"/>
+        <!-- 连接Idle超时时间 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="3600000" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${jdbc.maxWait}" />
+        <!-- DataSource Druid配置 -->
+        <property name="validationQuery" value="select now() from dual"/>
+        <property name="testWhileIdle" value="true" />
+        <property name="poolPreparedStatements" value="true" /><!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+        <property name="filters" value="stat,wall,slf4j" /><!-- 开启druid监控支持(stat)，SQL防火墙(wall)以及SQL合并(mergeStat) -->
+        <property name="proxyFilters">
+            <list>
+                <ref bean="stat-filter"/>
+            </list>
+        </property>
+        <property name="removeAbandoned" value="true" /> <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandonedTimeout" value="1800" /> <!-- 1800秒，也就是30分钟 -->
+        <property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+    </bean>
+
+    <!-- 数据源-1 -->
+    <bean id="sharding_rep_1" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url_1}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- Connection Pooling Info -->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        <property name="defaultAutoCommit" value="${jdbc.defaultAutoCommit}"/>
+        <!-- 连接Idle超时时间 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="3600000" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${jdbc.maxWait}" />
+        <!-- DataSource Druid配置 -->
+        <property name="validationQuery" value="select now() from dual"/>
+        <property name="testWhileIdle" value="true" />
+        <property name="poolPreparedStatements" value="true" /><!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+        <property name="filters" value="stat,wall,slf4j" /><!-- 开启druid监控支持(stat)，SQL防火墙(wall)以及SQL合并(mergeStat) -->
+        <property name="proxyFilters">
+            <list>
+                <ref bean="stat-filter"/>
+            </list>
+        </property>
+        <property name="removeAbandoned" value="true" /> <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandonedTimeout" value="1800" /> <!-- 1800秒，也就是30分钟 -->
+        <property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+    </bean>
+
+    <!-- 数据库路由策略 -->
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="order_id" algorithm-expression="sharding_rep_$->{order_id % 2}" />
+    <!-- 表的路由策略 -->
+    <sharding:inline-strategy id="orderStrategy" sharding-column="order_id" algorithm-expression="test_order_$->{order_id % 2}"/>
+    
+    <!-- 分布式键生成策略 -->
+    <sharding:key-generator id="orderIdKeyGenerator" type="SNOWFLAKE" column="order_id"/>
+    
+    <!-- sharding数据源 -->
+    <sharding:data-source id="shardingDataSource">
+        <sharding:sharding-rule data-source-names="sharding_rep_0,sharding_rep_1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="test_order"
+                                     actual-data-nodes="sharding_rep_$->{0..1}.test_order_$->{0..1}"
+                                     database-strategy-ref="databaseStrategy"
+                                     table-strategy-ref="orderStrategy"
+                                     key-generator-ref="orderIdKeyGenerator"/>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+</beans>

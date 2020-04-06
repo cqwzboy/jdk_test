@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 慢SQL记录 -->
+    <bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+        <property name="mergeSql" value="true" />
+        <property name="slowSqlMillis" value="2000" />
+        <property name="logSlowSql" value="true" />
+        <property name="connectionStackTraceEnable" value="true"/>
+    </bean>
+
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件，即mybatis-config.xml -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--<property name="dataSource" ref="masterSlaveDataSource"/>-->
+        <property name="dataSource" ref="shardingDataSource"/>
+        <!-- xml文件存放目录 -->
+        <property name="mapperLocations" value="classpath:mappers/*.xml"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!-- DAO接口所在的包，spring会自动扫描这下面的接口，并根据xml生成代理实现类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.mappers,com.code.fuqinqin.shardingJdbc.readAndWriteSeperation.springAndMybatis.mappers"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 事务控制 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--<property name="dataSource" ref="masterSlaveDataSource"/>-->
+        <property name="dataSource" ref="shardingDataSource"/>
+    </bean>
+    <tx:annotation-driven />
+
+</beans>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="120 seconds" debug="true">
+    <property resource="log4j.properties" />
+    <property name="LOG_HOME" value="${rp.log.home}" />
+    <property name="max.index" value="${max.index}" />
+    <property name="min.index" value="${min.index}" />
+    <property name="max.file.size" value="${max.file.size}" />
+
+    <!-- 控制台输出日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]%logger{56}.%method:%L -%msg%n</pattern>
+            <charset>UTF-8</charset>
+        </layout>
+    </appender>
+
+    <!-- 文件输出日志 (文件大小策略进行文件输出，超过指定大小对文件备份) -->
+    <appender name="FILE-debug"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <File>${LOG_HOME}/jdk-test.debug.log</File>
+        <!-- 日志回滚策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/debug/jdk-test.debug.%i.log</FileNamePattern>
+            <MinIndex>${min.index}</MinIndex>
+            <MaxIndex>${max.index}</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>${max.file.size}MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]%logger{56}.%method:%L -%msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </layout>
+    </appender>
+
+    <appender name="FILE-error"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <File>${LOG_HOME}/jdk-test.error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/error/jdk-test.error.%i.log</FileNamePattern>
+            <MinIndex>${min.index}</MinIndex>
+            <MaxIndex>${max.index}</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>${max.file.size}MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]%logger{56}.%method:%L -%msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </layout>
+    </appender>
+
+    <appender name="FILE-info"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <File>${LOG_HOME}/jdk-test.info.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/info/jdk-test.info.%i.log</FileNamePattern>
+            <MinIndex>${min.index}</MinIndex>
+            <MaxIndex>${max.index}</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>${max.file.size}MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]%logger{56}.%method:%L -%msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </layout>
+    </appender>
+
+    <appender name="FILE-trace"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+        <File>${LOG_HOME}/jdk-test.trace.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/trace/jdk-test.trace.%i.log</FileNamePattern>
+            <MinIndex>${min.index}</MinIndex>
+            <MaxIndex>${max.index}</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>${max.file.size}MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread]%logger{56}.%method:%L -%msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </layout>
+    </appender>
+
+    <!-- 项目代码日志 -->
+    <logger name="com.xiniu" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE-debug" />
+        <appender-ref ref="FILE-info" />
+        <appender-ref ref="FILE-error" />
+        <!--<appender-ref ref="FILE-trace" />-->
+    </logger>
+
+    <!-- 日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-info" />
+        <appender-ref ref="FILE-error" />
+    </root>
+
+</configuration>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:*.properties" file-encoding="UTF-8"/>
+
+    <!-- @Smile注解扫描器注册 -->
+    <bean id="smileScannerConfigurer" class="com.code.fuqinqin.spring.scanner.SmileScannerConfigurer">
+        <property name="basePackages" value="com.code.fuqinqin.spring.scanner.p1,com.code.fuqinqin.spring.scanner.p2"/>
+        <property name="markedAnnotation" value="com.code.fuqinqin.spring.scanner.Smile"/>
+        <property name="beanNameGenerator" ref="smileBeanGenerator"/>
+    </bean>
+
+    <!-- BeanName生成器 -->
+    <bean id="smileBeanGenerator" class="com.code.fuqinqin.spring.scanner.SmileAnnotationBaneNameGenerator">
+        <constructor-arg name="annotation" value="com.code.fuqinqin.spring.scanner.Smile"/>
+    </bean>
+
+    <import resource="spring-mybatis-sharding.xml"/>
+    <import resource="spring-sharding-data.xml"/>
+    <import resource="spring-sharding-readWriteSeperator.xml"/>
+
+</beans>
