@@ -71,9 +71,15 @@
         <property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
     </bean>
 
-    <!-- 数据库路由策略 -->
+    <!-- 数据库分片算法 -->
+    <bean id="preciseModuloDatabaseShardingAlgorithm"
+          class="com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm"/>
+
+    <!-- 自定义数据库路由策略 -->
+    <sharding:standard-strategy id="standardDatabaseStrategy" sharding-column="order_no" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm"/>
+    <!-- 行表达式数据库路由策略 -->
     <sharding:inline-strategy id="databaseStrategy" sharding-column="order_id" algorithm-expression="sharding_rep_$->{order_id % 2}" />
-    <!-- 表的路由策略 -->
+    <!-- 行表达式表的路由策略 -->
     <sharding:inline-strategy id="orderStrategy" sharding-column="order_id" algorithm-expression="test_order_$->{order_id % 2}"/>
     
     <!-- 分布式键生成策略 -->
@@ -85,7 +91,7 @@
             <sharding:table-rules>
                 <sharding:table-rule logic-table="test_order"
                                      actual-data-nodes="sharding_rep_$->{0..1}.test_order_$->{0..1}"
-                                     database-strategy-ref="databaseStrategy"
+                                     database-strategy-ref="standardDatabaseStrategy"
                                      table-strategy-ref="orderStrategy"
                                      key-generator-ref="orderIdKeyGenerator"/>
             </sharding:table-rules>
