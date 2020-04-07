@@ -91,7 +91,7 @@
             <sharding:table-rules>
                 <sharding:table-rule logic-table="test_order"
                                      actual-data-nodes="sharding_rep_$->{0..1}.test_order_$->{0..1}"
-                                     database-strategy-ref="standardDatabaseStrategy"
+                                     database-strategy-ref="databaseStrategy"
                                      table-strategy-ref="orderStrategy"
                                      key-generator-ref="orderIdKeyGenerator"/>
             </sharding:table-rules>
