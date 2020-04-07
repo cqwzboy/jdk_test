@@ -3,6 +3,7 @@ package com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis;
 import com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.entity.Order;
 import com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.entity.OrderExample;
 import com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.mappers.OrderMapper;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,31 +29,45 @@ public class OrderTest {
 
     @Test
     public void test() throws InterruptedException {
-        /*for (int i = 0; i < 10; i++) {
-            insert();
-        }*/
-        get();
+        insert();
+//        get();
     }
 
     private void get() {
-        Long orderId = 1352353635L;
-        OrderExample example = new OrderExample();
-        example.createCriteria().andOrderIdEqualTo(orderId);
-        List<Order> orders = orderMapper.selectByExample(example);
-        for (Order order : orders) {
-            System.out.println("\t"+order.getId()+" - "+order.getOrderId()+" - "+order.getOrderNo());
+        String data = "1|1";
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("test_order", data);
+        hintManager.addTableShardingValue("test_order", data);
+        try{
+            Long orderId = 1352353635L;
+            OrderExample example = new OrderExample();
+            example.createCriteria().andOrderIdEqualTo(orderId);
+            List<Order> orders = orderMapper.selectByExample(example);
+            for (Order order : orders) {
+                System.out.println("\t"+order.getId()+" - "+order.getOrderId()+" - "+order.getOrderNo());
+            }
+        }finally {
+            hintManager.close();
         }
     }
 
     private void insert() {
-        Order order = new Order();
-//        order.setOrderId(135235363900000L);
-        order.setOrderNo(UUID.randomUUID().toString().replaceAll("-", ""));
-        order.setGoodsId(72352525L);
-        order.setGoodsName("商品名称-1");
-        order.setUserId(662525L);
-        int rownum = orderMapper.insertSelective(order);
-        System.out.println("插入行数 = "+rownum);
+        String data = "0|0";
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("test_order", data);
+        hintManager.addTableShardingValue("test_order", data);
+        try{
+            Order order = new Order();
+            order.setOrderId(135235363900017L);
+            order.setOrderNo(UUID.randomUUID().toString().replaceAll("-", ""));
+            order.setGoodsId(72352525L);
+            order.setGoodsName("商品名称-1");
+            order.setUserId(662525L);
+            int rownum = orderMapper.insertSelective(order);
+            System.out.println("插入行数 = "+rownum);
+        }finally {
+            hintManager.close();
+        }
     }
 
     @Test

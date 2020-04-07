@@ -75,8 +75,15 @@
     <bean id="preciseModuloDatabaseShardingAlgorithm"
           class="com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.shardingAlgorithm.PreciseModuloDatabaseShardingAlgorithm"/>
 
+    <bean id="myDatabaseHintShardingAlgorithm"
+          class="com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.shardingAlgorithm.MyDatabaseHintShardingAlgorithm"/>
+    <bean id="myTableHintShardingAlgorithm"
+          class="com.code.fuqinqin.shardingJdbc.dataSharding.springAndMybatis.shardingAlgorithm.MyTableHintShardingAlgorithm"/>
+
     <!-- 自定义数据库路由策略 -->
     <sharding:standard-strategy id="standardDatabaseStrategy" sharding-column="order_no" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm"/>
+    <sharding:hint-strategy id="databaseHintStrategy" algorithm-ref="myDatabaseHintShardingAlgorithm"/>
+    <sharding:hint-strategy id="tableHintStrategy" algorithm-ref="myTableHintShardingAlgorithm"/>
     <!-- 行表达式数据库路由策略 -->
     <sharding:inline-strategy id="databaseStrategy" sharding-column="order_id" algorithm-expression="sharding_rep_$->{order_id % 2}" />
     <!-- 行表达式表的路由策略 -->
@@ -87,12 +94,14 @@
     
     <!-- sharding数据源 -->
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="sharding_rep_0,sharding_rep_1">
+        <sharding:sharding-rule data-source-names="sharding_rep_0,sharding_rep_1"
+                                        default-database-strategy-ref="databaseStrategy"
+                                        default-table-strategy-ref="orderStrategy">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="test_order"
-                                     actual-data-nodes="sharding_rep_$->{0..1}.test_order_$->{0..1}"
-                                     database-strategy-ref="databaseStrategy"
-                                     table-strategy-ref="orderStrategy"
+                                     actual-data-nodes="sharding_rep_0.test_order_0,sharding_rep_1.test_order_1"
+                                     database-strategy-ref="databaseHintStrategy"
+                                     table-strategy-ref="tableHintStrategy"
                                      key-generator-ref="orderIdKeyGenerator"/>
             </sharding:table-rules>
         </sharding:sharding-rule>
