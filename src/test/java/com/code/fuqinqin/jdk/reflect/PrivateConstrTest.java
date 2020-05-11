@@ -1,9 +1,12 @@
 package com.code.fuqinqin.jdk.reflect;
 
 import lombok.Data;
+import lombok.ToString;
 import org.junit.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * 私有构造器测试案例
@@ -21,10 +24,15 @@ public class PrivateConstrTest {
 
     @Test
     public void EnumReflectTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor<PersonEnum> constructor = PersonEnum.class.getDeclaredConstructor(new Class[]{Byte.class, String.class});
+        /*Constructor<PersonEnum> constructor = PersonEnum.class.getDeclaredConstructor(new Class[]{Byte.class, String.class});
         constructor.setAccessible(true);
         PersonEnum personEnum = constructor.newInstance((byte) 1, "p1");
-        System.out.println("结果："+personEnum.codeOf((byte)3));
+        System.out.println("结果："+personEnum.codeOf((byte)3));*/
+
+        Method method = PersonEnum.class.getMethod("codeOf", Byte.class);
+        System.out.println("method ("+method.getName()+") is "+(Modifier.isStatic(method.getModifiers())?"":"not")+" static");
+        PersonEnum personEnum = (PersonEnum) method.invoke(null, (byte) 1);
+        System.out.println("personEnum = " + personEnum);
     }
 
     @Data
@@ -38,6 +46,7 @@ public class PrivateConstrTest {
         }
     }
 
+    @ToString
     private enum  PersonEnum {
         PERSON_1((byte)1, "p1"),
         PERSON_2((byte)2, "p1"),
@@ -52,7 +61,15 @@ public class PrivateConstrTest {
         private Byte code;
         private String desc;
 
-        public PersonEnum codeOf(Byte code){
+        public Byte code(){
+            return this.code;
+        }
+
+        public String desc(){
+            return this.desc;
+        }
+
+        public static PersonEnum codeOf(Byte code){
             if(code == null){
                 return null;
             }
