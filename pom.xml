@@ -28,9 +28,15 @@
     <mybatis-generater-core.version>1.4.0</mybatis-generater-core.version>
     <log4j.version>1.2.17</log4j.version>
     <sharding-jdbc-spring-namespace.version>3.1.0</sharding-jdbc-spring-namespace.version>
+    <Java-WebSocket.version>1.3.8</Java-WebSocket.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>jtalk.incoming</groupId>
+      <artifactId>jtalk-incoming-api</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
     <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -174,9 +180,24 @@
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>${Java-WebSocket.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>lib/*.jar</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -218,7 +239,44 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.mybatis.generator</groupId>
+          <artifactId>mybatis-generator-maven-plugin</artifactId>
+          <version>1.4.0</version>
+          <configuration>
+            <configurationFile>src/test/resources/generatorConfig/generatorConfigTest.xml</configurationFile>
+            <verbose>true</verbose>
+            <overwrite>true</overwrite>
+          </configuration>
+          <executions>
+            <execution>
+              <id>generator</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>mysql</groupId>
+              <artifactId>mysql-connector-java</artifactId>
+              <version>6.0.4</version>
+            </dependency>
+            <dependency>
+              <groupId>jtalk.incoming</groupId>
+              <artifactId>jtalk-incoming-api</artifactId>
+              <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+          </dependencies>
+        </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.mybatis.generator</groupId>
+        <artifactId>mybatis-generator-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
   </build>
 </project>

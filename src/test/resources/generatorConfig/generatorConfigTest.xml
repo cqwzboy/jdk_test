@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <context id="common" targetRuntime="MyBatis3">
+        <property name="javaFileEncoding" value="UTF-8" />
+
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <plugin type="com.jd.jr.jtalk.incoming.api.common.repository.mysql.MysqlLimitPlugin" />
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" />
+            <property name="suppressDate" value="true" />
+            <property name="javaFileEncoding" value="utf-8" />
+        </commentGenerator>
+
+        <!--数据库基本信息-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://172.25.4.218:3306/jtalk_incoming?useUnicode=true&amp;characterEncoding=utf8"
+                        userId="m_jtalk_incoming"
+                        password="5NRqwp">
+        </jdbcConnection>
+
+        <!-- 步骤1: targetPackage包路径 -->
+        <javaModelGenerator targetPackage="com.jd.jr" targetProject="F:\IdeaProjects\self\jdk_test\src\test\java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!-- 步骤2: targetPackage替换Mapper.xml的包路径 -->
+        <sqlMapGenerator targetPackage="com.jd.jr" targetProject="F:\IdeaProjects\self\jdk_test\src\test\java">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- 步骤3: targetPackage替换成Mapper.java的包路径 -->
+        <javaClientGenerator targetPackage="com.jd.jr" type="XMLMAPPER" targetProject="F:\IdeaProjects\self\jdk_test\src\test\java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!-- 步骤4: tableName替换为要生成的数据库 -->
+        <table tableName="dialog_base" domainObjectName="DialogBaseEntity"
+               enableCountByExample="true" enableUpdateByExample="true" enableDeleteByExample="true"
+               enableSelectByExample="true" selectByExampleQueryId="true" enableInsert="true" enableDeleteByPrimaryKey="true"
+               enableSelectByPrimaryKey="true" enableUpdateByPrimaryKey="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+
+    </context>
+</generatorConfiguration>
