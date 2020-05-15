@@ -28,6 +28,7 @@
     <mybatis-generater-core.version>1.4.0</mybatis-generater-core.version>
     <log4j.version>1.2.17</log4j.version>
     <sharding-jdbc-spring-namespace.version>3.1.0</sharding-jdbc-spring-namespace.version>
+    <Java-WebSocket.version>1.3.8</Java-WebSocket.version>
   </properties>
 
   <dependencies>
@@ -178,6 +179,12 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>${Java-WebSocket.version}</version>
     </dependency>
   </dependencies>
 
