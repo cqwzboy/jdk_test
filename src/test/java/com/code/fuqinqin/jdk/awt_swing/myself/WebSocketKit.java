@@ -1,8 +1,21 @@
 package com.code.fuqinqin.jdk.awt_swing.myself;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+import org.java_websocket.WebSocket;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * WebSocket工具类
@@ -14,6 +27,14 @@ import java.awt.*;
 public class WebSocketKit extends JFrame {
     private int width = 1500;
     private int height = 840;
+
+    private WebSocketClient webSocketClient;;
+
+    private JTextField urlTextField;
+    private JTextArea logTextArea;
+    private JTextField heartbeatIntervalTextField;
+    private TextArea heartbeatTextArea;
+    private JTextField headerTextField;
 
     public WebSocketKit(String name){
         super(name);
@@ -40,14 +61,14 @@ public class WebSocketKit extends JFrame {
         FlowLayout layout = new FlowLayout();
         layout.setAlignment(FlowLayout.LEFT);
         northPanel.setLayout(layout);
-        northPanel.setBorder(new TitledBorder("URL"));
+        northPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
 
         JLabel jLabel = new JLabel("URL：");
         northPanel.add(jLabel);
 
-        JTextField urlText = new JTextField(50);
-        urlText.setEditable(true);
-        northPanel.add(urlText);
+        urlTextField = new JTextField(50);
+        urlTextField.setEditable(true);
+        northPanel.add(urlTextField);
 
         JButton connect = new JButton("连接");
         JButton disconnect = new JButton("断开连接");
@@ -59,11 +80,46 @@ public class WebSocketKit extends JFrame {
 
     private JPanel buildCenter(){
         JPanel centerPanel = new JPanel();
-        TitledBorder titledBorder = new TitledBorder("请求数据");
-        titledBorder.setTitleColor(Color.BLUE);
-        centerPanel.setBorder(titledBorder);
+        BorderLayout layout = new BorderLayout();   // 样式
+        centerPanel.setLayout(layout);
 
+        // headers
+        JPanel top = new JPanel();
+        top.setLayout(new FlowLayout(FlowLayout.LEFT));
+        top.setBorder(new TitledBorder("Headers"));
+        headerTextField = new JTextField(82);
+        top.add(headerTextField);
+        centerPanel.add(top, BorderLayout.NORTH);
 
+        // request area
+        JPanel requestPanel = new JPanel();
+        requestPanel.add(new JScrollPane(new JTextArea(30, 48)));
+        requestPanel.setBorder(new TitledBorder("请求报文"));
+        centerPanel.add(requestPanel, BorderLayout.CENTER);
+
+        // heartbeat and sendButton
+        JPanel heartbeatAndSendButtonPanel = new JPanel();
+        heartbeatAndSendButtonPanel.setLayout(new BorderLayout());
+        JPanel heartbeatPanel = new JPanel(new BorderLayout());
+        heartbeatPanel.setBorder(new TitledBorder("心跳报文"));
+        JPanel intervalPanel = new JPanel();
+        intervalPanel.add(new JLabel("Interval："));
+        heartbeatIntervalTextField = new JTextField(20);
+        intervalPanel.add(heartbeatIntervalTextField);
+        heartbeatPanel.add(intervalPanel, BorderLayout.NORTH);
+        heartbeatTextArea = new TextArea(20, 50);
+        JScrollPane heartbeatScrollPane = new JScrollPane(heartbeatTextArea);
+        heartbeatPanel.add(heartbeatScrollPane, BorderLayout.CENTER);
+        heartbeatAndSendButtonPanel.add(heartbeatPanel, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel();
+        FlowLayout buttonLayout = new FlowLayout();
+        buttonLayout.setAlignment(FlowLayout.RIGHT);
+        buttonPanel.setLayout(buttonLayout);
+        JButton button = new JButton("发送");
+        button.addActionListener(connectListener);
+        buttonPanel.add(button);
+        heartbeatAndSendButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
+        centerPanel.add(heartbeatAndSendButtonPanel, BorderLayout.EAST);
 
         return centerPanel;
     }
@@ -84,11 +140,99 @@ public class WebSocketKit extends JFrame {
         JPanel southPanel = new JPanel();
         southPanel.setBorder(new TitledBorder("日志"));
 
-        JTextArea textArea = new JTextArea(10, 134);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        logTextArea = new JTextArea(10, 134);
+        JScrollPane scrollPane = new JScrollPane(logTextArea);
         southPanel.add(scrollPane);
 
         return southPanel;
+    }
+
+    /*************************************************************** event begin ******************************************************************/
+    private ActionListener connectListener = e -> {
+        if(webSocketClient != null){
+            log("connectListener", "WebSocket长连接已建立，不可重复创建...");
+            return;
+        }
+
+        // url
+        String url = urlTextField.getText();
+        if(StringUtils.isBlank(url)){
+            log("connectListener", "URL为空...");
+            return;
+        }
+
+        // headers
+        String headerJson = headerTextField.getText();
+        Map<String, String> headers = new HashMap<>();
+        if(StringUtils.isBlank(headerJson)){
+            log("connectListener", "headers为空");
+        }else{
+            JSONObject headerJsonObject;
+            try{
+                headerJsonObject = JSON.parseObject(headerJson);
+            }catch (Exception ex){
+                ex.printStackTrace();
+                log("connectListener", "解析header失败，"+ex.getMessage());
+                return;
+            }
+            for (String key : headerJsonObject.keySet()) {
+                headers.put(key, (String) headerJsonObject.get(key));
+            }
+        }
+
+        // 建立连接
+        try{
+            webSocketClient = new WebSocketClient(new URI(url), headers){
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    log("connectListener", "建立连接成功");
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    log("connectListener", "收到及时消息："+s);
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    log("connectListener", "连接已关闭...");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                    log("connectListener", "#77345 发生异常，"+e.getMessage());
+                }
+            };
+        }catch (URISyntaxException ex){
+            ex.printStackTrace();
+            log("connectListener", "#88345 发生异常，"+ex.getMessage());
+            return;
+        }
+        webSocketClient.connect();
+        while (!webSocketClient.getReadyState().equals(WebSocket.READYSTATE.OPEN)){
+            log("connectListener", "正在连接...");
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+                log("connectListener", "#77345 发生异常，"+ex.getMessage());
+            }
+        }
+
+        // 心跳信息
+        String heartbeatIntervalString = heartbeatIntervalTextField.getText();
+        String heartbeatDataString = heartbeatTextArea.getText();
+
+    };
+
+    /*************************************************************** event end ******************************************************************/
+
+    /**
+     * 日志输出
+     * */
+    private void log(String methodName, String msg){
+        logTextArea.append(WebSocketKit.class.getName()+"-"+methodName+" "+msg+"\n");
     }
 
     public static void main(String[] args){

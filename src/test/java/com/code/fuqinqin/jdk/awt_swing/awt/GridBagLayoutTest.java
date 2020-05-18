@@ -66,7 +66,8 @@ public class GridBagLayoutTest extends AwtSwingTest {
         constraints.gridx = column;
         constraints.gridy = row;
         constraints.gridwidth = weight;
-        constraints.gridheight = height;gridBagLayout.setConstraints(component, constraints);
+        constraints.gridheight = height;
+        gridBagLayout.setConstraints(component, constraints);
         frame.add(component);
     }
 }
