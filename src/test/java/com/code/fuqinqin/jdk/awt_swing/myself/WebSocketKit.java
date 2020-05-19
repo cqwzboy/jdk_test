@@ -2,6 +2,7 @@ package com.code.fuqinqin.jdk.awt_swing.myself;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,9 @@ public class WebSocketKit extends JFrame {
     private JTextField heartbeatIntervalTextField;
     private TextArea heartbeatTextArea;
     private JTextField headerTextField;
+    private JTextArea messageTextArea;
+    private JTextArea requestTextArea;                          // 请求数据报文
+    private JTextField connectionStatusTextField;               // 连接状态
 
     public WebSocketKit(String name){
         super(name);
@@ -71,9 +76,15 @@ public class WebSocketKit extends JFrame {
         northPanel.add(urlTextField);
 
         JButton connect = new JButton("连接");
+        connect.addActionListener(connectListener);
         JButton disconnect = new JButton("断开连接");
+        disconnect.addActionListener(disconnectListener);
         northPanel.add(connect);
         northPanel.add(disconnect);
+
+        connectionStatusTextField = new JTextField(8);
+        connectionStatusTextField.setEditable(false);
+        northPanel.add(connectionStatusTextField);
 
         return northPanel;
     }
@@ -93,7 +104,8 @@ public class WebSocketKit extends JFrame {
 
         // request area
         JPanel requestPanel = new JPanel();
-        requestPanel.add(new JScrollPane(new JTextArea(30, 48)));
+        requestTextArea = new JTextArea(30, 38);
+        requestPanel.add(new JScrollPane(requestTextArea));
         requestPanel.setBorder(new TitledBorder("请求报文"));
         centerPanel.add(requestPanel, BorderLayout.CENTER);
 
@@ -103,7 +115,7 @@ public class WebSocketKit extends JFrame {
         JPanel heartbeatPanel = new JPanel(new BorderLayout());
         heartbeatPanel.setBorder(new TitledBorder("心跳报文"));
         JPanel intervalPanel = new JPanel();
-        intervalPanel.add(new JLabel("Interval："));
+        intervalPanel.add(new JLabel("Interval(毫秒)："));
         heartbeatIntervalTextField = new JTextField(20);
         intervalPanel.add(heartbeatIntervalTextField);
         heartbeatPanel.add(intervalPanel, BorderLayout.NORTH);
@@ -115,8 +127,14 @@ public class WebSocketKit extends JFrame {
         FlowLayout buttonLayout = new FlowLayout();
         buttonLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(buttonLayout);
+        JButton clearLogButton = new JButton("清空日志");
+        clearLogButton.addActionListener(clearLogListener);
+        buttonPanel.add(clearLogButton);
+        JButton clearMessagePanelButton = new JButton("清空信息面板");
+        clearMessagePanelButton.addActionListener(clearMessagePanelListener);
+        buttonPanel.add(clearMessagePanelButton);
         JButton button = new JButton("发送");
-        button.addActionListener(connectListener);
+        button.addActionListener(sendMsgListener);
         buttonPanel.add(button);
         heartbeatAndSendButtonPanel.add(buttonPanel, BorderLayout.SOUTH);
         centerPanel.add(heartbeatAndSendButtonPanel, BorderLayout.EAST);
@@ -126,12 +144,12 @@ public class WebSocketKit extends JFrame {
 
     private JPanel buildEast(){
         JPanel eastPanel = new JPanel();
-        eastPanel.setBorder(new TitledBorder("响应数据"));
+        eastPanel.setBorder(new TitledBorder("信息面板"));
         GridLayout layout = new GridLayout(1, 1);
         eastPanel.setLayout(layout);
 
-        JTextArea textArea = new JTextArea(30, 50);
-        eastPanel.add(new JScrollPane(textArea));
+        messageTextArea = new JTextArea(30, 60);
+        eastPanel.add(new JScrollPane(messageTextArea));
 
         return eastPanel;
     }
@@ -149,7 +167,7 @@ public class WebSocketKit extends JFrame {
 
     /*************************************************************** event begin ******************************************************************/
     private ActionListener connectListener = e -> {
-        if(webSocketClient != null){
+        if(webSocketClient!=null && webSocketClient.isConnecting()){
             log("connectListener", "WebSocket长连接已建立，不可重复创建...");
             return;
         }
@@ -186,16 +204,21 @@ public class WebSocketKit extends JFrame {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     log("connectListener", "建立连接成功");
+                    messageTextArea.append("["+DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")+"]\t建立连接成功...\n");
+                    connectionStatusTextField.setText("连接激活状态");
                 }
 
                 @Override
                 public void onMessage(String s) {
                     log("connectListener", "收到及时消息："+s);
+                    responseDataLog(s);
                 }
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    log("connectListener", "连接已关闭...");
+                    log("disconnectListener", "连接已关闭...");
+                    messageTextArea.append("["+now()+"]\t连接已关闭\n");
+                    connectionStatusTextField.setText("连接已关闭");
                 }
 
                 @Override
@@ -223,16 +246,88 @@ public class WebSocketKit extends JFrame {
         // 心跳信息
         String heartbeatIntervalString = heartbeatIntervalTextField.getText();
         String heartbeatDataString = heartbeatTextArea.getText();
-
+        if(StringUtils.isNotBlank(heartbeatIntervalString) && StringUtils.isNotBlank(heartbeatDataString)){
+            log("connectListener", "心跳信息不为空，heartbeatIntervalString="+heartbeatIntervalString+", heartbeatDataString="+heartbeatDataString);
+            new Thread(() -> {
+                while (true) {
+                    if(webSocketClient.isClosed()){
+                        return;
+                    }
+                    webSocketClient.send(heartbeatDataString);
+                    requestDataLog("["+now()+"] 发送心跳 ["+heartbeatDataString+"]");
+                    log("connectListener", "发送心跳 ["+heartbeatDataString+"]");
+                    try {
+                        Thread.sleep(Integer.parseInt(heartbeatIntervalString));
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                        log("connectListener", "触发心跳逻辑异常，"+ex.getMessage());
+                        return;
+                    }
+                }
+            }).start();
+        }else{
+            log("connectListener", "心跳信息为空，heartbeatIntervalString="+heartbeatIntervalString+", heartbeatDataString="+heartbeatDataString);
+        }
     };
 
+    private ActionListener disconnectListener = e -> {
+        if(webSocketClient == null){
+            log("disconnectListener", "尚未建立连接...");
+            return;
+        }
+        webSocketClient.close();
+    };
+
+    private ActionListener sendMsgListener = e -> {
+        try{
+            String requestDate = requestTextArea.getText();
+            if(StringUtils.isBlank(requestDate)){
+                log("sendMsgListener", "请求报文为空...");
+                return;
+            }
+            webSocketClient.send(requestDate);
+            log("sendMsgListener", "发送消息："+requestDate);
+            requestDataLog(requestDate);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            log("sendMsgListener", "发送消息异常，"+ex.getMessage());
+        }
+    };
+
+    private ActionListener clearLogListener = e -> {
+        logTextArea.setText(null);
+        log("clearLogListener", "清空日志面板成功");
+    };
+
+    private ActionListener clearMessagePanelListener = e -> {
+        messageTextArea.setText(null);
+        log("clearResponseDataListener", "清空消息面板成功");
+    };
     /*************************************************************** event end ******************************************************************/
 
     /**
      * 日志输出
      * */
     private void log(String methodName, String msg){
-        logTextArea.append(WebSocketKit.class.getName()+"-"+methodName+" "+msg+"\n");
+        logTextArea.append(now()+" "+WebSocketKit.class.getName()+"-"+methodName+" ["+Thread.currentThread().getName()+"] "+" "+msg+"\n");
+    }
+
+    /**
+     * 响应数据输出
+     * */
+    private void responseDataLog(String msg){
+        messageTextArea.append("【响应数据】 "+msg+"\n");
+    }
+
+    /**
+     * 请求数据输出
+     * */
+    private void requestDataLog(String msg){
+        messageTextArea.append("【请求数据】 "+msg+"\n");
+    }
+
+    private String now(){
+        return DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");
     }
 
     public static void main(String[] args){
