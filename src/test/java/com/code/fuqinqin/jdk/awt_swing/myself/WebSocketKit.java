@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
@@ -30,14 +29,19 @@ public class WebSocketKit extends JFrame {
     private int width = 1500;
     private int height = 840;
 
-    private WebSocketClient webSocketClient;;
+    private WebSocketClient webSocketClient;
 
-    private JTextField urlTextField;
-    private JTextArea logTextArea;
-    private JTextField heartbeatIntervalTextField;
-    private TextArea heartbeatTextArea;
-    private JTextField headerTextField;
-    private JTextArea messageTextArea;
+    // 背景色
+    private Color backgroundColor = Color.decode("#CFCFCF");
+    // 不可编辑背景色
+    private Color uneditableColor = Color.decode("#E8E8E8");
+
+    private JTextField urlTextField;                            // URL栏
+    private JTextArea logTextArea;                              // 日志面板
+    private JTextField heartbeatIntervalTextField;              // 心跳间隔
+    private TextArea heartbeatTextArea;                         // 心跳报文
+    private JTextField headerTextField;                         // header
+    private JTextArea messageTextArea;                          // 信息面板
     private JTextArea requestTextArea;                          // 请求数据报文
     private JTextField connectionStatusTextField;               // 连接状态
 
@@ -67,6 +71,7 @@ public class WebSocketKit extends JFrame {
         layout.setAlignment(FlowLayout.LEFT);
         northPanel.setLayout(layout);
         northPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+        northPanel.setBackground(Color.decode("#CFCFCF"));
 
         JLabel jLabel = new JLabel("URL：");
         northPanel.add(jLabel);
@@ -93,12 +98,14 @@ public class WebSocketKit extends JFrame {
         JPanel centerPanel = new JPanel();
         BorderLayout layout = new BorderLayout();   // 样式
         centerPanel.setLayout(layout);
+        centerPanel.setBackground(backgroundColor);
 
         // headers
         JPanel top = new JPanel();
         top.setLayout(new FlowLayout(FlowLayout.LEFT));
         top.setBorder(new TitledBorder("Headers"));
-        headerTextField = new JTextField(82);
+        top.setBackground(backgroundColor);
+        headerTextField = new JTextField(72);
         top.add(headerTextField);
         centerPanel.add(top, BorderLayout.NORTH);
 
@@ -107,26 +114,32 @@ public class WebSocketKit extends JFrame {
         requestTextArea = new JTextArea(30, 38);
         requestPanel.add(new JScrollPane(requestTextArea));
         requestPanel.setBorder(new TitledBorder("请求报文"));
+        requestPanel.setBackground(backgroundColor);
         centerPanel.add(requestPanel, BorderLayout.CENTER);
 
         // heartbeat and sendButton
         JPanel heartbeatAndSendButtonPanel = new JPanel();
         heartbeatAndSendButtonPanel.setLayout(new BorderLayout());
+        heartbeatAndSendButtonPanel.setBackground(backgroundColor);
         JPanel heartbeatPanel = new JPanel(new BorderLayout());
         heartbeatPanel.setBorder(new TitledBorder("心跳报文"));
+        heartbeatPanel.setBackground(backgroundColor);
         JPanel intervalPanel = new JPanel();
         intervalPanel.add(new JLabel("Interval(毫秒)："));
+        intervalPanel.setBackground(backgroundColor);
         heartbeatIntervalTextField = new JTextField(20);
         intervalPanel.add(heartbeatIntervalTextField);
         heartbeatPanel.add(intervalPanel, BorderLayout.NORTH);
         heartbeatTextArea = new TextArea(20, 50);
         JScrollPane heartbeatScrollPane = new JScrollPane(heartbeatTextArea);
+        heartbeatScrollPane.setBackground(backgroundColor);
         heartbeatPanel.add(heartbeatScrollPane, BorderLayout.CENTER);
         heartbeatAndSendButtonPanel.add(heartbeatPanel, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel();
         FlowLayout buttonLayout = new FlowLayout();
         buttonLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(buttonLayout);
+        buttonPanel.setBackground(backgroundColor);
         JButton clearLogButton = new JButton("清空日志");
         clearLogButton.addActionListener(clearLogListener);
         buttonPanel.add(clearLogButton);
@@ -147,8 +160,11 @@ public class WebSocketKit extends JFrame {
         eastPanel.setBorder(new TitledBorder("信息面板"));
         GridLayout layout = new GridLayout(1, 1);
         eastPanel.setLayout(layout);
+        eastPanel.setBackground(backgroundColor);
 
         messageTextArea = new JTextArea(30, 60);
+        messageTextArea.setBackground(uneditableColor);
+        messageTextArea.setEditable(false);     // 不可被编辑
         eastPanel.add(new JScrollPane(messageTextArea));
 
         return eastPanel;
@@ -157,8 +173,11 @@ public class WebSocketKit extends JFrame {
     private JPanel buildSouth(){
         JPanel southPanel = new JPanel();
         southPanel.setBorder(new TitledBorder("日志"));
+        southPanel.setBackground(backgroundColor);
 
         logTextArea = new JTextArea(10, 134);
+        logTextArea.setBackground(uneditableColor);                     // 背景色
+        logTextArea.setEditable(false);                                 // 日志文本域不可编辑
         JScrollPane scrollPane = new JScrollPane(logTextArea);
         southPanel.add(scrollPane);
 
@@ -167,7 +186,7 @@ public class WebSocketKit extends JFrame {
 
     /*************************************************************** event begin ******************************************************************/
     private ActionListener connectListener = e -> {
-        if(webSocketClient!=null && webSocketClient.isConnecting()){
+        if(webSocketClient!=null && webSocketClient.isOpen()){
             log("connectListener", "WebSocket长连接已建立，不可重复创建...");
             return;
         }
@@ -206,6 +225,16 @@ public class WebSocketKit extends JFrame {
                     log("connectListener", "建立连接成功");
                     messageTextArea.append("["+DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")+"]\t建立连接成功...\n");
                     connectionStatusTextField.setText("连接激活状态");
+
+                    // 心跳报文区域，间隔时间，headers，URL变成不可编辑
+                    heartbeatTextArea.setEditable(false);
+                    heartbeatTextArea.setBackground(uneditableColor);
+                    heartbeatIntervalTextField.setEditable(false);
+                    heartbeatIntervalTextField.setBackground(uneditableColor);
+                    headerTextField.setEditable(false);
+                    headerTextField.setBackground(uneditableColor);
+                    urlTextField.setEditable(false);
+                    urlTextField.setBackground(uneditableColor);
                 }
 
                 @Override
@@ -219,6 +248,16 @@ public class WebSocketKit extends JFrame {
                     log("disconnectListener", "连接已关闭...");
                     messageTextArea.append("["+now()+"]\t连接已关闭\n");
                     connectionStatusTextField.setText("连接已关闭");
+
+                    // 心跳报文区域，间隔时间，headers，URL变成可编辑状态
+                    heartbeatTextArea.setEditable(true);
+                    heartbeatTextArea.setBackground(Color.WHITE);
+                    heartbeatIntervalTextField.setEditable(true);
+                    heartbeatIntervalTextField.setBackground(Color.WHITE);
+                    headerTextField.setEditable(true);
+                    headerTextField.setBackground(Color.WHITE);
+                    urlTextField.setEditable(true);
+                    urlTextField.setBackground(Color.WHITE);
                 }
 
                 @Override
@@ -251,7 +290,7 @@ public class WebSocketKit extends JFrame {
             new Thread(() -> {
                 while (true) {
                     if(webSocketClient.isClosed()){
-                        return;
+                        break;
                     }
                     webSocketClient.send(heartbeatDataString);
                     requestDataLog("["+now()+"] 发送心跳 ["+heartbeatDataString+"]");
@@ -261,7 +300,7 @@ public class WebSocketKit extends JFrame {
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                         log("connectListener", "触发心跳逻辑异常，"+ex.getMessage());
-                        return;
+                        break;
                     }
                 }
             }).start();
