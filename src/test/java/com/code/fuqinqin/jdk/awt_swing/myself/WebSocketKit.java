@@ -225,6 +225,7 @@ public class WebSocketKit extends JFrame {
                     log("connectListener", "建立连接成功");
                     messageTextArea.append("["+DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")+"]\t建立连接成功...\n");
                     connectionStatusTextField.setText("连接激活状态");
+                    connectionStatusTextField.setBackground(Color.decode("#98FB98"));
 
                     // 心跳报文区域，间隔时间，headers，URL变成不可编辑
                     heartbeatTextArea.setEditable(false);
@@ -248,6 +249,7 @@ public class WebSocketKit extends JFrame {
                     log("disconnectListener", "连接已关闭...");
                     messageTextArea.append("["+now()+"]\t连接已关闭\n");
                     connectionStatusTextField.setText("连接已关闭");
+                    connectionStatusTextField.setBackground(Color.decode("#F08080"));
 
                     // 心跳报文区域，间隔时间，headers，URL变成可编辑状态
                     heartbeatTextArea.setEditable(true);
