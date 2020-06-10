@@ -202,6 +202,66 @@ public class ByteBufferTest {
     }
 
     /**
+     * 标记函数 -- mark()
+     *
+     * 功能：mark = position
+     *
+     * 输出：
+     * capacity=20,limit=20,position=12,hasRemaining:true,remaining=8,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=20,position=5,hasRemaining:true,remaining=15,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=20,position=2,hasRemaining:true,remaining=18,hasArray=true,isReadOnly=false,arrayOffset=0
+     * */
+    @Test
+    public void markTest(){
+        ByteBuffer buffer = ByteBuffer.allocate(20).put("Hello Mark()".getBytes());
+        print(buffer);
+
+        buffer.position(2).mark().position(5);
+
+        print(buffer);
+
+        buffer.reset();
+
+        print(buffer);
+    }
+
+    /**
+     * 压缩函数 -- compact()
+     *
+     * 注意：使用前先调用 flip() 函数才能达到预期目的
+     *
+     * 功能：position =
+     *
+     * 输出：
+     * capacity=20,limit=20,position=15,hasRemaining:true,remaining=5,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=15,position=0,hasRemaining:true,remaining=15,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=15,position=2,hasRemaining:true,remaining=13,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=20,position=13,hasRemaining:true,remaining=7,hasArray=true,isReadOnly=false,arrayOffset=0
+     * 10 = t
+     * 11 = (
+     * 12 = )
+     * 13 = (
+     * 14 = )
+     * */
+    @Test
+    public void compactTest(){
+        ByteBuffer buffer = ByteBuffer.allocate(20).put("Hello Compact()".getBytes());
+        print(buffer);
+        buffer.flip();
+        print(buffer);
+        buffer.get();
+        buffer.get();
+        print(buffer);
+        buffer.compact();
+        print(buffer);
+        System.out.println("10 = "+(char)buffer.get(10));
+        System.out.println("11 = "+(char)buffer.get(11));
+        System.out.println("12 = "+(char)buffer.get(12));
+        System.out.println("13 = "+(char)buffer.get(13));
+        System.out.println("14 = "+(char)buffer.get(14));
+    }
+
+    /**
      * 遍历方式一（效率最高）
      * */
     private static String readString(ByteBuffer buffer){
