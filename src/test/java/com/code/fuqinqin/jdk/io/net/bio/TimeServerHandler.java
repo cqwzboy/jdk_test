@@ -33,8 +33,8 @@ public class TimeServerHandler implements Runnable {
                  }else{
                      System.out.println("receive request: " + request);
                      writer.println(Calendar.getInstance().getTime().toLocaleString());
+                     writer.flush();
                  }
-                 writer.flush();
              }
         } catch (IOException e) {
             e.printStackTrace();
