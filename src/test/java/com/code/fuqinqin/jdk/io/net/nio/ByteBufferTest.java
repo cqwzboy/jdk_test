@@ -228,9 +228,12 @@ public class ByteBufferTest {
     /**
      * 压缩函数 -- compact()
      *
+     * 压缩对于使缓冲区与您从端口中读入的数据（包）逻辑块流的同步来说也许是一种便利的方法(处理粘包、解包的问题)。
+     *
      * 注意：使用前先调用 flip() 函数才能达到预期目的
      *
-     * 功能：position =
+     * 功能：position = remaining();
+     *       limit = capacity;
      *
      * 输出：
      * capacity=20,limit=20,position=15,hasRemaining:true,remaining=5,hasArray=true,isReadOnly=false,arrayOffset=0
@@ -242,6 +245,7 @@ public class ByteBufferTest {
      * 12 = )
      * 13 = (
      * 14 = )
+     * 重读： llo Compact()
      * */
     @Test
     public void compactTest(){
@@ -259,6 +263,67 @@ public class ByteBufferTest {
         System.out.println("12 = "+(char)buffer.get(12));
         System.out.println("13 = "+(char)buffer.get(13));
         System.out.println("14 = "+(char)buffer.get(14));
+
+        // 重新读取
+        System.out.println("重读： "+readString(buffer));
+    }
+
+    /**
+     * 复制函数 - duplicate()
+     *
+     * 缓冲区的复制有分两种：
+     * 1、完全复制：调用duplicate()函数或者asReadOnlyBuffer()函数
+     * 2、部分复制：调用slice函数
+     *
+     * 输出：
+     * capacity=20,limit=20,position=0,hasRemaining:true,remaining=20,hasArray=true,isReadOnly=false,arrayOffset=0
+     * capacity=20,limit=10,position=6,hasRemaining:true,remaining=4,hasArray=true,isReadOnly=false,arrayOffset=0
+     * isReadOnly: true
+     * capacity=4,limit=4,position=0,hasRemaining:true,remaining=4,hasArray=true,isReadOnly=false,arrayOffset=6
+     * */
+    @Test
+    public void duplicateTest(){
+        // duplicate()
+        ByteBuffer buffer = ByteBuffer.allocate(20).put("Hello Duplicate()".getBytes());
+        buffer.position(3).limit(10).mark().position(6);
+        ByteBuffer duplicate = buffer.duplicate();
+        buffer.clear();
+        print(buffer);
+        print(duplicate);
+
+        // asReadOnlyBuffer()
+        ByteBuffer readOnlyBuffer = duplicate.asReadOnlyBuffer();
+//        readOnlyBuffer.put("1".getBytes()); // java.nio.ReadOnlyBufferException
+        System.out.println("isReadOnly: "+readOnlyBuffer.isReadOnly());
+
+        // slice()
+        ByteBuffer slice = duplicate.slice();
+        print(slice);
+    }
+
+    /**
+     * 直接缓存区
+     *
+     * 回顾我们之前讲解UNIX 五种IO模型中的读取数据的过程，读取数据总是需要通过内核空间传递到用户空间，而往外写数据总是要通过用户空间到内核空间。
+     * JVM堆栈属于用户空间。 而我们这里提到的直接缓冲区，就是内核空间的内存。内核空间的内存在java中是通过Unsafe这个类来调用的。
+     * */
+    @Test
+    public void directBufferTest(){
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(20).put("Hello DirectBuffer".getBytes());
+        System.out.println("直接缓存区："+readString(directBuffer));
+    }
+
+    /**
+     * 内存映射缓冲区 - MappedByteBuffer
+     *
+     * 映射缓冲区是带有存储在文件，通过内存映射来存取数据元素的字节缓冲区。映射缓冲区通常是直接存取内存的，只能通过 FileChannel 类创建。
+     * 映射缓冲区的用法和直接缓冲区类似，但是 MappedByteBuffer 对象可以处理独立于文件存取形式的的许多特定字符。
+     *
+     * MappedByteBuffer在大文件处理方面性能比较高，如果你在做一个文件存储服务器，可以考虑使用MappedByteBuffer。
+     * */
+    @Test
+    public void mappedByteBufferTest(){
+
     }
 
     /**
