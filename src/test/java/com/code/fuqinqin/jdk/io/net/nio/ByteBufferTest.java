@@ -140,7 +140,7 @@ public class ByteBufferTest {
     /**
      * 回退函数 -- rewind()
      *
-     * 功能 position=0; 用于在flip(0后重读历史数据
+     * 功能 position=0; 用于在flip()后重读历史数据
      *
      * 输出：
      * capacity=20,limit=20,position=0,hasRemaining:true,remaining=20,hasArray=true,isReadOnly=false,arrayOffset=0
