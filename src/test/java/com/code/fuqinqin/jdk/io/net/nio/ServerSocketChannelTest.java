@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @author fuqinqin3
  * @date 2020-06-11
  * */
-public class ChannelTest {
+public class ServerSocketChannelTest {
     @Test
     public void channelTest() throws IOException, InterruptedException {
         String data = "Hello, i must going.\r\n";
