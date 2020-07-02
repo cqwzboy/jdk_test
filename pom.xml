@@ -21,7 +21,7 @@
     <logback.version>1.1.2</logback.version>
     <spring.version>5.2.5.RELEASE</spring.version>
     <sharding-jdbc.version>4.0.1</sharding-jdbc.version>
-    <mysql.version>5.1.38</mysql.version>
+    <mysql.version>8.0.16</mysql.version>
     <druid.version>1.1.21</druid.version>
     <mybatis.version>3.5.4</mybatis.version>
     <mybatis-spring.version>2.0.4</mybatis-spring.version>
@@ -268,7 +268,7 @@
             <dependency>
               <groupId>mysql</groupId>
               <artifactId>mysql-connector-java</artifactId>
-              <version>6.0.4</version>
+              <version>8.0.16</version>
             </dependency>
             <dependency>
               <groupId>jtalk.incoming</groupId>
