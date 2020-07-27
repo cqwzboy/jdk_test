@@ -45,4 +45,10 @@ public class SocketChannelTest {
 
         sc.close();
     }
+
+    @Test
+    public void test1(){
+        String format = "<body>%s</body>";
+        System.out.println(String.format(format, "你好"));
+    }
 }
