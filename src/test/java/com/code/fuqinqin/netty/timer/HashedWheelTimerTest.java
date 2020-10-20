@@ -19,25 +19,22 @@ import java.util.concurrent.TimeUnit;
  * */
 @Slf4j
 public class HashedWheelTimerTest {
-    private HashedWheelTimer timer = new HashedWheelTimer(new NameThreadFactory());
+    private HashedWheelTimer timer = new HashedWheelTimer(
+            new NameThreadFactory(),
+            1000,
+            TimeUnit.MILLISECONDS,
+            5);
 
     @Test
     public void test(){
-        timer.newTimeout(new TimerTask() {
-            int count = 0;
-            @Override
-            public void run(Timeout timeout) throws Exception {
-                log.info("时间轮执行了{}", count++);
-                timer.newTimeout(this, 2*1000, TimeUnit.MILLISECONDS);
-            }
-        }, 2 * 1000, TimeUnit.MILLISECONDS);
+        start(10);
 
-        new Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                log.info("java.util.Timer...");
-            }
-        }, 1000, 2000);
+//        new Timer().schedule(new java.util.TimerTask() {
+//            @Override
+//            public void run() {
+//                log.info("java.util.Timer...");
+//            }
+//        }, 1000, 2000);
 
         synchronized (HashedWheelTimerTest.class){
             try {
@@ -45,6 +42,20 @@ public class HashedWheelTimerTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void start(int count){
+        for (int i = 0; i < count; i++) {
+            final int index = i;
+            timer.newTimeout(new TimerTask() {
+                int count = 0;
+                @Override
+                public void run(Timeout timeout) throws Exception {
+                    log.info("{}-时间轮执行了{}", index, count++);
+                    timer.newTimeout(this, index*1000, TimeUnit.MILLISECONDS);
+                }
+            }, 2 * 1000, TimeUnit.MILLISECONDS);
         }
     }
 }
