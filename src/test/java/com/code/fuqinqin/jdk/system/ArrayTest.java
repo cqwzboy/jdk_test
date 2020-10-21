@@ -23,6 +23,19 @@ public class ArrayTest {
         showArray(array4);
     }
 
+    /**
+     * 实现数组元素的移除
+     * */
+    @Test
+    public void removeElement(){
+        int[] array = {1, 2, 3, 4, 5, 6, 7, 8};
+        showArray(array);
+        System.arraycopy(array, 3, array, 2, 5);
+        showArray(array);
+        array[array.length-1] = -1;
+        showArray(array);
+    }
+
     private void showArray(int[] array){
         int length = array.length;
         System.out.print("[");
