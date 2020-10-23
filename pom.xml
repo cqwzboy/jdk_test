@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.code.fuqinqin</groupId>
@@ -30,20 +30,34 @@
     <sharding-jdbc-spring-namespace.version>3.1.0</sharding-jdbc-spring-namespace.version>
     <Java-WebSocket.version>1.3.8</Java-WebSocket.version>
     <httpclient.version>4.5.12</httpclient.version>
+    <fastjson.version>1.2.74</fastjson.version>
+    <honey-badger.version>1.0-SNAPSHOT</honey-badger.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.badger</groupId>
+      <artifactId>badger-common</artifactId>
+      <version>${honey-badger.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>${fastjson.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>${httpclient.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>jtalk.incoming</groupId>
-      <artifactId>jtalk-incoming-api</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>jtalk.incoming</groupId>-->
+    <!--<artifactId>jtalk-incoming-api</artifactId>-->
+    <!--<version>0.0.1-SNAPSHOT</version>-->
+    <!--</dependency>-->
     <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
@@ -270,11 +284,11 @@
               <artifactId>mysql-connector-java</artifactId>
               <version>6.0.4</version>
             </dependency>
-            <dependency>
-              <groupId>jtalk.incoming</groupId>
-              <artifactId>jtalk-incoming-api</artifactId>
-              <version>0.0.1-SNAPSHOT</version>
-            </dependency>
+            <!--<dependency>-->
+            <!--<groupId>jtalk.incoming</groupId>-->
+            <!--<artifactId>jtalk-incoming-api</artifactId>-->
+            <!--<version>0.0.1-SNAPSHOT</version>-->
+            <!--</dependency>-->
           </dependencies>
         </plugin>
       </plugins>

@@ -2,8 +2,8 @@ package com.code.fuqinqin.jdk.awt_swing.myself;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.badger.common.lang.util.DateUtil;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -223,7 +223,7 @@ public class WebSocketKit extends JFrame {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     log("connectListener", "建立连接成功");
-                    messageTextArea.append("["+DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")+"]\t建立连接成功...\n");
+                    messageTextArea.append("["+DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")+"]\t建立连接成功...\n");
                     connectionStatusTextField.setText("连接激活状态");
                     connectionStatusTextField.setBackground(Color.decode("#98FB98"));
 
@@ -368,7 +368,7 @@ public class WebSocketKit extends JFrame {
     }
 
     private String now(){
-        return DateUtil.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");
+        return DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");
     }
 
     public static void main(String[] args){
