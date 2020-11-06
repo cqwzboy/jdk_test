@@ -32,9 +32,16 @@
     <httpclient.version>4.5.12</httpclient.version>
     <fastjson.version>1.2.74</fastjson.version>
     <honey-badger.version>1.0-SNAPSHOT</honey-badger.version>
+    <ehcache.version>3.8.1</ehcache.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>${ehcache.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.badger</groupId>
       <artifactId>badger-common</artifactId>
