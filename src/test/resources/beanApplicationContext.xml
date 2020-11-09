@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="a" class="com.code.fuqinqin.spring.beans.A">
+        <property name="a" value="张三"/>
+    </bean>
+
+    <bean id="b" class="com.code.fuqinqin.spring.beans.B">
+        <property name="b" value="李四"/>
+    </bean>
+
+    <bean id="c" class="com.code.fuqinqin.spring.beans.C">
+        <property name="c" value="王五"/>
+    </bean>
+
+</beans>
