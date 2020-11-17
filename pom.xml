@@ -34,9 +34,17 @@
     <honey-badger.version>1.0-SNAPSHOT</honey-badger.version>
     <ehcache.version>3.8.1</ehcache.version>
     <cglib.version>3.3.0</cglib.version>
+    <commons-io.version>2.4</commons-io.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+
+
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
