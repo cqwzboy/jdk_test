@@ -1,0 +1,3 @@
+com.code.fuqinqin.designPattern.bridge.department.ProductDepartment
+com.code.fuqinqin.designPattern.bridge.department.DevelopDepartment
+com.code.fuqinqin.designPattern.bridge.department.TestDepartment
