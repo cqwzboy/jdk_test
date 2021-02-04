@@ -1,0 +1,11 @@
+<!ELEMENT library (book+)>
+<!ELEMENT book (title,author,publisher,price)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT author (#PCDATA)>
+<!ELEMENT publisher (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+
+<!ATTLIST book year CDATA #IMPLIED>
+<!ATTLIST book month (1|2|3|4|5|6|7|8|9|10|11|12)>
+
+<!ENTITY default_book_name "三国演义">
