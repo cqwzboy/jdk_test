@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library [
+        <!ELEMENT library (book+)>
+        <!ELEMENT book (title,author,publisher,price)>
+        <!ELEMENT title (#PCDATA)>
+        <!ELEMENT author (#PCDATA)>
+        <!ELEMENT publisher (#PCDATA)>
+        <!ELEMENT price (#PCDATA)>
+
+        <!ATTLIST book year CDATA #IMPLIED>
+        ]>
+<library>
+    <book year="2000">
+        <title>西游记</title>
+        <author>吴承恩</author>
+        <publisher>中华书局</publisher>
+        <price>50.5</price>
+    </book>
+    <book year="2005">
+        <title>红楼梦</title>
+        <author>曹雪芹</author>
+        <publisher>长江书局</publisher>
+        <price>78</price>
+    </book>
+    <book year="1995">
+        <title>三国演义</title>
+        <author>罗贯中</author>
+        <publisher>中华书局</publisher>
+        <price>78</price>
+    </book>
+</library>
