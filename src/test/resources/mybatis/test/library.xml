@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE library [
+<!--<!DOCTYPE library [
         <!ELEMENT library (book+)>
         <!ELEMENT book (title,author,publisher,price)>
         <!ELEMENT title (#PCDATA)>
@@ -8,7 +8,8 @@
         <!ELEMENT price (#PCDATA)>
 
         <!ATTLIST book year CDATA #IMPLIED>
-        ]>
+        ]>-->
+<!DOCTYPE library SYSTEM "library.dtd">
 <library>
     <book year="2000">
         <title>西游记</title>
@@ -23,7 +24,7 @@
         <price>78</price>
     </book>
     <book year="1995">
-        <title>三国演义</title>
+        <title>&sanguo;&yanyi;</title>
         <author>罗贯中</author>
         <publisher>中华书局</publisher>
         <price>78</price>

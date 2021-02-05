@@ -1,0 +1,11 @@
+<!ELEMENT library (book+)>
+<!ELEMENT book (title,author,publisher,price)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT author (#PCDATA)>
+<!ELEMENT publisher (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+
+<!ATTLIST book year (1995|2000|2005) #REQUIRED>
+
+<!ENTITY sanguo "三国">
+<!ENTITY yanyi "演义">

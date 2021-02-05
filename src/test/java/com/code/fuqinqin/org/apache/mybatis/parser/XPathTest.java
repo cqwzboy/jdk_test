@@ -39,16 +39,19 @@ public class XPathTest {
         documentBuilder.setErrorHandler(new ErrorHandler() {
             @Override
             public void warning(SAXParseException exception) throws SAXException {
+                System.out.println("warning: " + exception.getMessage());
                 throw exception;
             }
 
             @Override
             public void error(SAXParseException exception) throws SAXException {
+                System.out.println("error: " + exception.getMessage());
                 throw exception;
             }
 
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
+                System.out.println("fatalError: " + exception.getMessage());
                 throw exception;
             }
         });
@@ -64,7 +67,8 @@ public class XPathTest {
         System.out.println("查询作者为罗贯中的图书标题：");
         // 编译XPath表达式
         XPathExpression xPathExpression = xPath.compile("//book[author='罗贯中']/title/text()");
-        // 通过XPAth表达式得到结果，第一个参数制定了XPath表达式进行查询的上下文节点，也就是指定节点下查找符合XPath的节点，本例中的上下文节点是整个文档；第二个参数制定了XPath表达式的返回类型
+        // 通过XPAth表达式得到结果，第一个参数制定了XPath表达式进行查询的上下文节点，也就是指定节点下查找符合XPath的节点，
+        // 本例中的上下文节点是整个文档；第二个参数制定了XPath表达式的返回类型
         Object result1 = xPathExpression.evaluate(document, XPathConstants.NODESET);
         NodeList nodeList = (NodeList) result1;
         for (int i = 0; i < nodeList.getLength(); i++) {
