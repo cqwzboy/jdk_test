@@ -2,6 +2,7 @@ package com.code.fuqinqin.org.apache.mybatis.reflection;
 
 import com.alibaba.fastjson.JSON;
 import com.code.fuqinqin.org.apache.mybatis.reflection.model.Student;
+import lombok.Data;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaClass;
 import org.junit.Test;
@@ -77,5 +78,31 @@ public class MetaClassTest {
     @Test
     public void findPropertyTest() {
         System.out.println("findProperty: " + metaClass.findProperty("hobby"));
+    }
+
+    @Test
+    public void getSetterTypeTest2() {
+        MetaClass metaClass = MetaClass.forClass(Clazz.class, new DefaultReflectorFactory());
+        System.out.println("Student.name setterType: " + metaClass.getSetterType("student.name"));
+        System.out.println("Student.bookList setterType: " + metaClass.getSetterType("student.bookList"));
+        // 会报错
+//        System.out.println("Student.book.name setterType: " + metaClass.getSetterType("student.bookList[0].name"));
+    }
+
+    @Data
+    private static class Book {
+        private String name;
+    }
+
+    @Data
+    private static class Student {
+        private String name;
+        private List<Book> bookList;
+    }
+
+    @Data
+    private static class Clazz {
+        private String name;
+        private MetaClassTest.Student student;
     }
 }
