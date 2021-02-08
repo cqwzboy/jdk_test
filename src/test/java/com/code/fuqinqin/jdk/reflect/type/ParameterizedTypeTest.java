@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * <p>ParameterizedType是用于描述方法入参/出参、属性带有泛型的类型</p>
+ * <p>参数化类型</p>
  *
  * @author fuqinqin3
  * @version 1.0
