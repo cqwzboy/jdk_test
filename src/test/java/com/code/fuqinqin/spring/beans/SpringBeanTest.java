@@ -28,6 +28,13 @@ public class SpringBeanTest extends Bootstrap {
         show(context);
     }
 
+    @Test
+    public void getBeanTest() {
+        ApplicationContext context = super.load("beanApplicationContext.xml");
+        A a = context.getBean(A.class);
+        System.out.println("a = " + a);
+    }
+
     private void show(ApplicationContext context){
         int beanDefinitionCount = context.getBeanDefinitionCount();
         System.out.println("beanDefinitionCount = "+beanDefinitionCount);
