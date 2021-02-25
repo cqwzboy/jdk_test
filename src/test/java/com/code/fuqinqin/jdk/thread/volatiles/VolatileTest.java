@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class VolatileTest implements Runnable {
 
-//    volatile boolean flag = false;
+    //    volatile boolean flag = false;
     boolean flag = false;
     long i;
 
