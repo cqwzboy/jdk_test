@@ -35,7 +35,7 @@
     <ehcche.version>3.7.0</ehcche.version>
     <ehcache.version>3.8.1</ehcache.version>
     <cglib.version>3.3.0</cglib.version>
-    <commons-io.version>2.4</commons-io.version>
+    <commons-io.version>2.7</commons-io.version>
   </properties>
 
   <dependencies>
