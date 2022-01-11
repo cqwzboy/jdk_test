@@ -28,7 +28,6 @@ public class ParameterizedTypeTest {
         Field[] fields = Person.class.getDeclaredFields();
         Stream.of(fields).forEach(field -> {
             System.out.println("----------------------- " + count++ + ".field.getName(): " + field.getName() + " ---------------------------");
-            System.out.println("field.getClass(): " + field.getClass().getName());
             System.out.println("field.getType(): " + field.getType().getName());
             Type genericType = field.getGenericType();
             System.out.println("field.getGenericType(): " + genericType.getTypeName());
@@ -60,7 +59,6 @@ public class ParameterizedTypeTest {
         private Set<String> organSet;
         private Map<String, Integer> organCountMap;
         private Dream<String> dream;
-        private Dream.DreamDetail<String> dreamDetail;
 
         public Map<String, Person> query(List<String> nameList) {
             return null;
@@ -69,10 +67,7 @@ public class ParameterizedTypeTest {
 
     @Data
     public static class Dream<T> {
-        @Data
-        public static class DreamDetail<T> {
-            private T name;
-        }
+
     }
 
 }

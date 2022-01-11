@@ -21,14 +21,16 @@ public class MethodTest {
         Method method = Person.class.getMethod("query", Object.class);
 
         System.out.println("method.getName(): " + method.getName());
+        System.out.println("-------------------------------------------------");
 
         System.out.println("method.getReturnType(): " + JSON.toJSONString(method.getReturnType()));
         System.out.println("method.getGenericReturnType(): " + JSON.toJSONString(method.getGenericReturnType()));
         System.out.println("method.getParameterTypes(): " + JSON.toJSONString(method.getParameterTypes()));
         System.out.println("method.getGenericParameterTypes(): " + JSON.toJSONString(method.getGenericParameterTypes()));
+        System.out.println("-------------------------------------------------");
 
         System.out.println("method.getDeclaringClass(): " + method.getDeclaringClass());
-        System.out.println("method.getTypeParameters(): " + JSON.toJSONString(method.getTypeParameters()));
+//        System.out.println("method.getTypeParameters(): " + JSON.toJSONString(method.getTypeParameters()));
         System.out.println("method.getParameterCount(): " + method.getParameterCount());
     }
 
